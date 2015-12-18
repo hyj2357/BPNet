@@ -13,6 +13,6 @@ public class Main {
     	 Random random = new Random(19881211);
     	 System.out.println(random.nextDouble());
           **/
-    	 
+    	
      }
 }
