@@ -57,7 +57,7 @@ public BPNetwork(int layers,int nodeNumOfLayer[]){
     * 正向传播过程
     * 获取output
     */
-private void forward_propagating(){
+   private void forward_propagating(){
 	   
    }
    /**
