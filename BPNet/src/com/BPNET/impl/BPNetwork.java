@@ -89,6 +89,7 @@ public class BPNetwork implements Net{
        for(int i=0;i<this.nodeNumOfLayer.length;i++)
     	   this.X[i] = new double[this.nodeNumOfLayer[i]];  
        this.input = new double[this.nodeNumOfLayer[0]];
+       this.Y = new double[this.nodeNumOfLayer[0]];
        this.output = new double[this.nodeNumOfLayer[this.nodeNumOfLayer.length-1]];
    }
    
@@ -230,8 +231,10 @@ public class BPNetwork implements Net{
    		   writeContent += (nodeNumOfLayer[i]+"\r\n");
 	   for(int k=0;k<layers-1;k++){
 		   for(int i=0;i<nodeNumOfLayer[k];i++)
-		      for(int j=0;j<nodeNumOfLayer[k+1];j++)
+		      for(int j=0;j<nodeNumOfLayer[k+1];j++){
 				  writeContent += weight[k][i][j];
+				  writeContent += "\r\n";
+		      }
 	   }
        OutputStream fotps = new FileOutputStream(f);
        fotps.write(writeContent.getBytes());
