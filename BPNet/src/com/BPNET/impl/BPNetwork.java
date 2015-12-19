@@ -11,18 +11,50 @@ import java.util.Scanner;
 import com.BPNET.Net;
 
 public class BPNetwork implements Net{
-	
-   private double input[],output[];    //输入输出.
-   private double X[][];               //每层的输出,例如 X[0][1],表示第0层的第1个神经元的输出.并且 X[k][i] = Xi(k) = f(Ui(k)) .Xi.
-   private double weight[][][];        //每两层之间的各个神经元连接的权值 ,例如 weight[0][1][2],表示第0层第1个神经元到第1层第2个神经元之间连接输入输出的权值 .Wij.
-   private double deltaWeight[][][];   //每次调整权值改变量.ΔWij.
-   private int layers;                 //该神经网络层数.
-   private int nodeNumOfLayer[];       //每一层的神经元数.
-   private double Y[];                 //教师信号.Yi.
-   private double d[][];               //每一层每个神经元的d值,用于反向传播.di(k).
-   
-   private static final double STEP = 0.2;    //学习步数,η.    
-   private static final double E = 0.1;     //误差范围,e.
+	/**
+	 * 输入输出.
+	 */
+   private double input[],output[]; 
+   /**
+    * 每层的输出,例如 X[0][1],表示第0层的第1个神经元的输出.并且 X[k][i] = Xi(k) = f(Ui(k)) .Xi.
+    */
+   private double X[][];  
+   /**
+    * 每两层之间的各个神经元连接的权值 ,例如 weight[0][1][2],表示第0层第1个神经元到第1层第2个神经元之间连接输入输出的权值 .Wij.
+    */
+   private double weight[][][];
+   /**
+    * 每次调整权值改变量.ΔWij.
+    */
+   private double deltaWeight[][][]; 
+   /**
+    * 该神经网络层数.
+    */
+   private int layers;  
+   /**
+    * 每一层的神经元数.
+    */
+   private int nodeNumOfLayer[];
+   /**
+    * 教师信号.Yi.
+    */
+   private double Y[];    
+   /**
+    * 每一层每个神经元的d值,用于反向传播.di(k).
+    */
+   private double d[][];  
+   /**
+    * 输出文件名
+    */
+   private String filename;   
+   /**
+    * 学习步数,η. 
+    */
+   private static final double STEP = 0.2; 
+   /**
+    * 误差范围,e.
+    */
+   private static final double E = 0.005;     
    private static String FPREFIX = System.getProperty("user.dir")+File.separator+"data"+File.separator+"weight"+File.separator;
    private static final String DEFAULT_FILENAME = "weight.txt";
    
@@ -70,14 +102,15 @@ public class BPNetwork implements Net{
     * @param layers  神经网络层数
     * @param nodeNumOfLayer  每层的神经元数
     */
-   public BPNetwork(int layers,int nodeNumOfLayer[]){
+   public BPNetwork(int layers,int nodeNumOfLayer[],String filename){
 	   if(layers<2){
 		   System.out.println("At least 2 layers.");
 		   return;
 	   }
 	   this.layers = layers;
 	   this.nodeNumOfLayer = nodeNumOfLayer;
-
+       this.filename = filename;
+	   
 	   this.weight = new double[this.layers-1][1][1];
 	   this.deltaWeight = new double[this.layers-1][1][1];
 	   this.d = new double[this.layers][1];
@@ -131,6 +164,21 @@ public class BPNetwork implements Net{
 	   }
    }
    
+   public boolean checkOne(double data[],int label){
+	   for(int j=0;j<data.length;j++)   //注入输入信号input
+		    input[j] = data[j];
+	   forward_propagating();      //正向传播获取output
+  	   for(int j=0;j<output.length;j++){
+		 if(j==label)
+			Y[j] = 1;
+		 else
+			Y[j] = 0;
+	   }
+  	   if(scopeJudge())
+  		   return true;
+  	   else
+	       return false;
+   }
    
    /**
     * 由训练集进行学习
@@ -166,10 +214,10 @@ public class BPNetwork implements Net{
    }
    
    /**
-    * 进行单个数据学习.该方法只能被learn方法调用.
+    * 进行单个数据学习.
     * @param data
     */
-   private void learnOne(double data[],int tSignal){
+   public void learnOne(double data[],int tSignal){
 	  for(int i=0;i<data.length;i++)   //注入输入信号input
 		  input[i] = data[i];
 	  int sum = 0;
@@ -187,13 +235,13 @@ public class BPNetwork implements Net{
         	break;
         this.backard_propagating();    //如果出现结果不符,进行反向传播.
 	  }
-	  System.out.print("lsum: "+ sum+" .");
-	  System.out.print("weight 0 0 0: "+ this.weight[1][9][3]+" .");	  
+	  System.out.println("lsum: "+ sum+" .");
+	  //System.out.print("weight 0 0 0: "+ this.weight[1][9][3]+" .");	  
    }
    
    /**
     * 进行结果范围判定
-    * @return
+    * @return  output 是否在  Y 误差范围内
     */
    private boolean scopeJudge(){
 	     boolean e = true;
@@ -263,8 +311,8 @@ public class BPNetwork implements Net{
     * 将该网络写入到文件当中
     * @throws IOException
     */
-   private void writeWeightToFile() throws IOException{
-   	   File f = new File(FPREFIX+DEFAULT_FILENAME);    		
+   public void writeWeightToFile() throws IOException{
+   	   File f = new File(FPREFIX + ((filename==null)?DEFAULT_FILENAME:filename) );    		
    	   if(!f.exists())
    			f.createNewFile();
    	   String writeContent = "";
