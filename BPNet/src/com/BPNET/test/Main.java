@@ -10,7 +10,7 @@ import com.KNNMINIST.impl.LabelSet;
 
 public class Main {
      public static void main(String args[]) throws IOException{
-    	 BPNetwork b1 = new BPNetwork(3,new int[]{784,20,10});
+    	 
     	 //System.out.println(Tools.sigmod(0));
          /**
     	 Random random = new Random(19881211);
@@ -29,7 +29,25 @@ public class Main {
  		l1.initAfterGetData();
  		ltr.setData(System.getProperty("user.dir")+"\\data\\train-labels.idx1-ubyte");   //获取训练集标签
  		ltr.initAfterGetData();
+ 		 
+/**
+        BPNetwork b1 = new BPNetwork(null);
+
+ 		double data[][] = new double[10000][784];
+ 		int label[] = new int[10000];
+ 		for(int i=0;i<10000;i++){
+ 		  label[i] = ltr.get(8+i);
+		  for(int j=16;j<(16+784);j++)
+			  data[i][j-16] = (double)tr.get(j+i*783);
+ 		}
  		
+ 		b1.checkTestSet(data, label);
+ 	**/
+ 		
+
+
+      	BPNetwork b1 = new BPNetwork(3,new int[]{784,20,10});
+
  		double trainData[][] = new double[10000][784];
  		int tSignal[] = new int[10000];
  		for(int i=0;i<10000;i++){
@@ -38,5 +56,7 @@ public class Main {
 			trainData[i][j-16] = (double)tr.get(j+i*783);
  		}
  		b1.learn(trainData, tSignal);
+ 	
+ 		
      }
 }

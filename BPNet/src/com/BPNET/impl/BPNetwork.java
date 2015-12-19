@@ -22,7 +22,7 @@ public class BPNetwork implements Net{
    private double d[][];               //每一层每个神经元的d值,用于反向传播.di(k).
    
    private static final double STEP = 0.2;    //学习步数,η.    
-   private static final double E = 0.005;     //误差范围,e.
+   private static final double E = 0.1;     //误差范围,e.
    private static String FPREFIX = System.getProperty("user.dir")+File.separator+"data"+File.separator+"weight"+File.separator;
    private static final String DEFAULT_FILENAME = "weight.txt";
    
@@ -42,20 +42,26 @@ public class BPNetwork implements Net{
 	      Scanner sc = new Scanner(fl);
 	      layers = sc.nextInt();
 	      nodeNumOfLayer = new int[layers];
+		  this.weight = new double[this.layers-1][1][1];
+
 	      for(int i=0;i<layers;i++)
 	    	  nodeNumOfLayer[i] = sc.nextInt();   
 		  for(int i=0;i<nodeNumOfLayer.length-1;i++){
 			  int left = this.nodeNumOfLayer[i];
 			  int right= this.nodeNumOfLayer[i+1];
-			  //this.weight[i] = new double[left][right];
-			  deltaWeight[i] = new double[left][right];
+			  this.weight[i] = new double[left][right];
+			  //deltaWeight[i] = new double[left][right];
 		  }
 		  for(int k=0;k<layers-1;k++){
 			  for(int i=0;i<nodeNumOfLayer[k];i++)
 				for(int j=0;j<nodeNumOfLayer[k+1];j++)
 				  weight[k][i][j] = sc.nextDouble();
 		  }
+		   this.X = new double[this.layers][1];
+	       for(int i=0;i<this.nodeNumOfLayer.length;i++)
+	    	   this.X[i] = new double[this.nodeNumOfLayer[i]];  
 	       this.input = new double[this.nodeNumOfLayer[0]];
+	       this.Y = new double[this.nodeNumOfLayer[this.nodeNumOfLayer.length-1]];
 	       this.output = new double[this.nodeNumOfLayer[this.nodeNumOfLayer.length-1]];
    }
    
@@ -89,9 +95,42 @@ public class BPNetwork implements Net{
        for(int i=0;i<this.nodeNumOfLayer.length;i++)
     	   this.X[i] = new double[this.nodeNumOfLayer[i]];  
        this.input = new double[this.nodeNumOfLayer[0]];
-       this.Y = new double[this.nodeNumOfLayer[0]];
+       this.Y = new double[this.nodeNumOfLayer[this.nodeNumOfLayer.length-1]];
        this.output = new double[this.nodeNumOfLayer[this.nodeNumOfLayer.length-1]];
    }
+   
+   /**
+    * 测试数据
+    * @param data
+    * @param label
+    */
+   public void checkTestSet(double data[][],int label[]){
+	   if(data.length!=label.length){
+		   System.out.println("测试集数据个数与对应标签个数不符合.");
+		   return;
+	   }
+	   int right=0,wrong=0,sum=0;
+	   for(int i=0;i<data.length;i++){
+		   for(int j=0;j<data[i].length;j++)   //注入输入信号input
+			    input[j] = data[i][j];
+		   this.forward_propagating();      //正向传播获取output
+       	   for(int j=0;j<output.length;j++){
+    		 if(j==label[i])
+    			Y[j] = 1;
+    		 else
+    			Y[j] = 0;
+    	   }
+       	   if(this.scopeJudge()){
+       		   sum++;
+       		   right++;
+       	   }else{
+       		   sum++;
+       		   wrong++;
+       	   }
+       	   System.out.println("Right rate: " + ((((double)right)/((double)sum))*100) + "%");
+	   }
+   }
+   
    
    /**
     * 由训练集进行学习
@@ -133,20 +172,23 @@ public class BPNetwork implements Net{
    private void learnOne(double data[],int tSignal){
 	  for(int i=0;i<data.length;i++)   //注入输入信号input
 		  input[i] = data[i];
-	  for(int i=0;i<100;i++){          //单个数据学习次数最多为100次
+	  int sum = 0;
+	  for(int i=0;i<10000;i++,sum++){          //单个数据学习次数最多为1000次
         this.forward_propagating();    //正向传播
         if(i==0){                      //如果是第一次学习,则注入教师信号.
         	for(int j=0;j<output.length;j++){
         		if(j==tSignal)
-        			Y[i] = 1;
+        			Y[j] = 1;
         		else
-        			Y[i] = 0;
+        			Y[j] = 0;
         	}
         }        
         if(this.scopeJudge())          //与教师信号比对
         	break;
         this.backard_propagating();    //如果出现结果不符,进行反向传播.
 	  }
+	  System.out.print("lsum: "+ sum+" ");
+	  System.out.print("weight 0 0 0: "+ this.weight[1][9][3]+" ");	  
    }
    
    /**
