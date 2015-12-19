@@ -146,7 +146,7 @@ public class BPNetwork implements Net{
 	   int sum = trainData.length;
 	   for(int i=0;i<sum;i++){
 		   learnOne(trainData[i], tSignal[i]);
-		   System.out.println("Learn rate" + ((((double)(i+1))/(double)(sum))*100) + "%");
+		   System.out.println("Learn rate: " + ((((double)(i+1))/(double)(sum))*100) + "%.");
 	   }
 	   System.out.println("Learning finish!");           //训练结束
        writeWeightToFile();                              //将训练结果写入到文件当中
@@ -187,8 +187,8 @@ public class BPNetwork implements Net{
         	break;
         this.backard_propagating();    //如果出现结果不符,进行反向传播.
 	  }
-	  System.out.print("lsum: "+ sum+" ");
-	  System.out.print("weight 0 0 0: "+ this.weight[1][9][3]+" ");	  
+	  System.out.print("lsum: "+ sum+" .");
+	  System.out.print("weight 0 0 0: "+ this.weight[1][9][3]+" .");	  
    }
    
    /**
