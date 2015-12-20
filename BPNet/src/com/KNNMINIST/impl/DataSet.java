@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.BPNET.impl.Tools;
 import com.KNNMINIST.Set;
 
 /**
@@ -16,10 +17,12 @@ import com.KNNMINIST.Set;
 public class DataSet implements Set{
     private int magicNum,num,raw,column,cursor=1;
     private byte[] data;
+    private double[][] bits;
+    
 	@Override
 	public void setData(String filePath) {
 		File file = new File(filePath);
-		FileInputStream fis  = null;
+		FileInputStream fis  = null;		
     	try {
     	  fis = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
@@ -31,7 +34,7 @@ public class DataSet implements Set{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	
+    	bits = new double[(data.length-16)/784][6272];
 	}
 	
 	/**
@@ -43,6 +46,14 @@ public class DataSet implements Set{
         num = readInt_32();
         raw = readInt_32();
         column = readInt_32();
+ 		for(int i=0;i<(data.length-16)/784;i++){
+		  for(int j=16;j<(16+784);j++){
+			  double l[] = new double[8]; 
+			  l = Tools.from8ByteToBit(data[j+i*783], l);
+			  for(int k=0;k<8;k++)
+			    bits[i][k+(j-16)*8] = l[k];
+ 		  }
+ 		}
 	}
 	
 	
