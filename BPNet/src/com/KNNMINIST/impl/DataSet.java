@@ -34,7 +34,6 @@ public class DataSet implements Set{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    	bits = new double[(data.length-16)/784][6272];
 	}
 	
 	/**
@@ -46,14 +45,6 @@ public class DataSet implements Set{
         num = readInt_32();
         raw = readInt_32();
         column = readInt_32();
- 		for(int i=0;i<(data.length-16)/784;i++){
-		  for(int j=16;j<(16+784);j++){
-			  double l[] = new double[8]; 
-			  l = Tools.from8ByteToBit(data[j+i*783], l);
-			  for(int k=0;k<8;k++)
-			    bits[i][k+(j-16)*8] = l[k];
- 		  }
- 		}
 	}
 	
 	

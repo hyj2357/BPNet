@@ -191,12 +191,14 @@ public class BPNetwork implements Net{
 		   System.out.println("训练集数据个数与对应标签(教师信号)个数不符合");
 		   return;
 	   }
+	   long t = System.currentTimeMillis();
 	   int sum = trainData.length;
 	   for(int i=0;i<sum;i++){
 		   learnOne(trainData[i], tSignal[i]);
 		   System.out.println("Learn rate: " + ((((double)(i+1))/(double)(sum))*100) + "%.");
 	   }
 	   System.out.println("Learning finish!");           //训练结束
+	   System.out.println("Running time: "+(System.currentTimeMillis()-t)+"ms");
        writeWeightToFile();                              //将训练结果写入到文件当中
    }
    

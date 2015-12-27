@@ -34,12 +34,15 @@ public class BPNetList {
     }
     
     public void learn(double[][] trainData, int[] tSignal) throws IOException{
-    	int num = trainData.length;
-    	for(int i=0;i<num;i++){
+       int num = trainData.length;
+ 	   long t = System.currentTimeMillis();
+       for(int i=0;i<num;i++){
     		this.BPLst[tSignal[i]].learnOne(trainData[i], tSignal[i]);
     		System.out.println((i+1)+" .learn percent:" + (((double)i)/((double)num))*100 +" %.");
     	}
-    	for(int i=0;i<this.BPLst.length;i++)
+ 	   System.out.println("Learning finish!");           //ÑµÁ·½áÊø
+ 	   System.out.println("Running time: "+(System.currentTimeMillis()-t)+"ms");
+       for(int i=0;i<this.BPLst.length;i++)
     		this.BPLst[i].writeWeightToFile();
     }
     
